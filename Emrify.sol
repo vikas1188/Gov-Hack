@@ -28,7 +28,7 @@ contract Emrify {
     mapping(address => mapping ( address => RestrictedAccessUser)) public permission;
     mapping(address => string) public resAccUserName;
     mapping(address => AllHash) public AllRecordHashes;
-    function test(){
+    function Emrify(){
         owner = msg.sender; // Entity X is the owner of the contract
         permission[owner][owner].isAllergiesShared = true;
         permission[owner][owner].isMedicationShared = true;
