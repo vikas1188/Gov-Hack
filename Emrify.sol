@@ -3,13 +3,8 @@ contract Emrify {
     
     address public owner ;
     string public name;//5
-    uint256 totalNo=0;
-    struct Note{
-        string AttachmentHash;
-        string TextHash;
-        uint256 count;
-    }
-    mapping(address => mapping ( address =>Note)) public notes ;
+    mapping (address => uint256) public individualCount;
+    
     struct AllHash{
         string AllergiesHash;//1 already present
         string MedicationHash;//2
@@ -28,6 +23,10 @@ contract Emrify {
     mapping(address => mapping ( address => RestrictedAccessUser)) public permission;
     mapping(address => string) public resAccUserName;
     mapping(address => AllHash) public AllRecordHashes;
+    mapping(address =>  mapping ( uint256 =>string)) public notes ;
+    event DocAdded(address indexed provider, address indexed patient, string msg,
+    string attachmentHash, string textHash );
+
     function Emrify(){
         owner = msg.sender; // Entity X is the owner of the contract
         permission[owner][owner].isAllergiesShared = true;
@@ -43,9 +42,7 @@ contract Emrify {
     function setNamePerm(address _address, bool nameToggle){
         permission[msg.sender][_address].isNameAllowed = nameToggle;
     }
-    
-    // this address here shall come after pop-up or alert
-    // here user shall choose, whether they want 
+
     function getName (address _address) constant returns (string ) {
         if(permission[msg.sender][_address].isNameAllowed == true ){
             return resAccUserName[msg.sender];
@@ -174,17 +171,21 @@ function getAllergies (address patient) constant  returns (string ) {
             return "not allowed";
         }
     } 
-    event DocAdded(address indexed provider, address indexed patient, string msg,
-    string attachmentHash, string textHash );
-    // this should be multi-sig so that only when patient says then only his account shall get updated
+
+// Doctor or radiologist must be able to add details for any patient
     function providerNotes(string _AttachmentHash,string _TextHash,address patient){
-            notes[patient][msg.sender].AttachmentHash=_AttachmentHash;
-            notes[patient][msg.sender].TextHash=_TextHash;
-            notes[patient][msg.sender].count +=  2;
-            DocAdded(msg.sender, patient, "document added successfully",_AttachmentHash,_TextHash);
+        notes[patient][individualCount[patient]++]= _AttachmentHash;
+        notes[patient][individualCount[patient]++]= _TextHash;
+        DocAdded(msg.sender, patient, "document added successfully",_AttachmentHash,_TextHash);
     }
     
-    
+    function getIndividualCount() constant returns ( uint256 ){
+        return individualCount[msg.sender];
+    }
+
+    function fetchRecordsbyID(uint256 id)constant returns (string){
+        return notes[msg.sender][id];
+    }
 }
 
 
