@@ -1,4 +1,3 @@
-
 contract Emrify {
     
     address public owner ;
@@ -42,7 +41,9 @@ contract Emrify {
     function setNamePerm(address _address, bool nameToggle){
         permission[msg.sender][_address].isNameAllowed = nameToggle;
     }
-
+    
+    // this address here shall come after pop-up or alert
+    // here user shall choose, whether they want 
     function getName (address _address) constant returns (string ) {
         if(permission[msg.sender][_address].isNameAllowed == true ){
             return resAccUserName[msg.sender];
@@ -132,6 +133,14 @@ contract Emrify {
 	        return false;
 	    }
     }
+    function getBoolAccount (address patient,address DrAddress) constant returns (bool){
+	    if (permission[patient][DrAddress].isAccountHash == true){
+	        return true;
+	    }
+	    else{
+	        return false;
+	    }
+    }
 // 4 getter caller as per the on-chain permission to get the data stored   
 // reason for these many getMethod calls is that, 
 // currently solidity doesn't support return of array of string data type
@@ -171,8 +180,15 @@ function getAllergies (address patient) constant  returns (string ) {
             return "not allowed";
         }
     } 
+      function getAccountReqFromProvider (address patient) constant returns (string ) {
+        if(permission[patient][msg.sender].isAccountHash == true){
+            return AllRecordHashes[patient].AccountHash;
+        }
+        else {
+            return "not allowed";
+        }
+    } 
 
-// Doctor or radiologist must be able to add details for any patient
     function providerNotes(string _AttachmentHash,string _TextHash,address patient){
         notes[patient][individualCount[patient]++]= _AttachmentHash;
         notes[patient][individualCount[patient]++]= _TextHash;
@@ -187,5 +203,3 @@ function getAllergies (address patient) constant  returns (string ) {
         return notes[msg.sender][id];
     }
 }
-
-
