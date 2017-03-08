@@ -23,8 +23,7 @@ contract Emrify {
     mapping(address => string) public resAccUserName;
     mapping(address => AllHash) public AllRecordHashes;
     mapping(address =>  mapping ( uint256 =>string)) public notes ;
-    event DocAdded(address indexed provider, address indexed patient, string msg,
-    string attachmentHash, string textHash );
+    event DocAdded(address indexed provider, address indexed patient, string msg, string attachmentHash, string textHash );
 
     function Emrify(){
         owner = msg.sender; // Entity X is the owner of the contract
@@ -189,10 +188,10 @@ function getAllergies (address patient) constant  returns (string ) {
         }
     } 
 
-    function providerNotes(string _AttachmentHash,string _TextHash,address patient){
+    function providerNotes(string _AttachmentHash,string _TextHash,address patient, string _tag){
         notes[patient][individualCount[patient]++]= _AttachmentHash;
         notes[patient][individualCount[patient]++]= _TextHash;
-        DocAdded(msg.sender, patient, "document added successfully",_AttachmentHash,_TextHash);
+        DocAdded(msg.sender, patient, _tag ,_AttachmentHash,_TextHash);
     }
     
     function getIndividualCount() constant returns ( uint256 ){
